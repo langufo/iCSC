@@ -26,14 +26,15 @@ int main()
 
     double pi, sum = 0.0;
     double step = 1.0/(double) common::num_steps; //x-step
+    double num_steps_2 = static_cast<double>(common::num_steps) * common::num_steps;
     int n_threads=1;
 
-    for (unsigned long long i=1; i<=common::num_steps; i++) {
-        double x = (i - 0.5) * step; //computing the x value
-        sum += 4.0 / (1.0 + x * x); //adding to the cumulus
+    for (unsigned long long i=1; i<common::num_steps*2+1; i+=2) {
+        double x = i;
+        sum += 16.0 / (num_steps_2 * 4.0 + x * x); //adding to the cumulus
     }
 
-    pi = step * sum;
+    pi = common::num_steps * sum;
 
     common::print_results(pi,n_threads);
     
