@@ -12,10 +12,16 @@ int main(){
     bool debug_output=false;
 
     // This is needed to allow the presence of a parallel for nested in another parallel region
-    omp_set_nested(1);
+    /* replaced original function call as the compiler complained */
+    omp_set_max_active_levels(2);
 
     int outputCounter = 0;
     bool done = false;
+
+    /* reserve one thread (core) for monitoring */
+    #pragma omp parallel
+    #pragma omp master
+    omp_set_num_threads(omp_get_num_threads() - 1);
 
 #pragma omp parallel sections shared(outputCounter,done) num_threads(2)
 {
@@ -34,7 +40,7 @@ int main(){
     #pragma omp section
     {
         int section = 2;
-        #pragma omp parallel num_threads(16)
+        #pragma omp parallel
         {
             if(debug_output) printf("computing th_id: %d, n_th: %d\n",omp_get_thread_num(), omp_get_num_threads());
             #pragma omp for
